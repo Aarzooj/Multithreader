@@ -45,7 +45,7 @@ void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numT
   struct timespec start_time;
   if (clock_gettime(CLOCK_MONOTONIC, &start_time) == -1)
   {
-    perror("shell.c: clock_gettime");
+    perror("simple-multithreader.h: clock_gettime");
     exit(EXIT_FAILURE);
   }
   pthread_t tid[numThreads];
@@ -77,11 +77,11 @@ void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numT
   struct timespec end_time;
   if (clock_gettime(CLOCK_MONOTONIC, &end_time) == -1)
   {
-    perror("shell.c: clock_gettime");
+    perror("simple-multithreader.h: clock_gettime");
     exit(EXIT_FAILURE);
   }
   double execution_time = ((end_time.tv_sec - start_time.tv_sec) * 1000) + (end_time.tv_nsec + start_time.tv_nsec) / 1e6;
-  std::cout << "Execution time: " << execution_time << std::endl;
+  std::cout << "Execution time: " << execution_time << "seconds" << std::endl;
 }
 
 void parallel_for(int low1, int high1, int low2, int high2, std::function<void(int, int)> &&lambda, int numThreads)
@@ -89,7 +89,7 @@ void parallel_for(int low1, int high1, int low2, int high2, std::function<void(i
   struct timespec start_time;
   if (clock_gettime(CLOCK_MONOTONIC, &start_time) == -1)
   {
-    perror("shell.c: clock_gettime");
+    perror("simple-multithreader.h: clock_gettime");
     exit(EXIT_FAILURE);
   }
   pthread_t tid[numThreads];
@@ -127,11 +127,11 @@ void parallel_for(int low1, int high1, int low2, int high2, std::function<void(i
   struct timespec end_time;
   if (clock_gettime(CLOCK_MONOTONIC, &end_time) == -1)
   {
-    perror("shell.c: clock_gettime");
+    perror("simple-multithreader.h: clock_gettime");
     exit(EXIT_FAILURE);
   }
   double execution_time = ((end_time.tv_sec - start_time.tv_sec) * 1000) + (end_time.tv_nsec + start_time.tv_nsec) / 1e6;
-  std::cout << "Execution time: " << execution_time << std::endl;
+  std::cout << "Execution time: " << execution_time << "seconds" << std::endl;
 }
 
 /* Demonstration on how to pass lambda as parameter.
