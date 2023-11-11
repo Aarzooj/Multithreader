@@ -42,14 +42,22 @@ void *thread_func_2(void *ptr)
 
 void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numThreads)
 {
+  struct timespec start_time;
+  if (clock_gettime(CLOCK_MONOTONIC, &start_time) == -1)
+  {
+    perror("shell.c: clock_gettime");
+    exit(EXIT_FAILURE);
+  }
   pthread_t tid[numThreads];
   thread_args args[numThreads];
-  int chunk = (high - low) / numThreads;
+  int size = high - low;
+  int chunk = size / numThreads;
+  int rem = size % numThreads;
   for (int i = 0; i < numThreads; i++)
   {
-    args[i].start1 = i * chunk;
+    args[i].start1 = low + i * chunk;
     args[i].lambda1 = lambda;
-    args[i].end1 = (i + 1) * chunk;
+    args[i].end1 = low + (i + 1) * chunk;
     pthread_create(&tid[i],
                    NULL,
                    thread_func_1,
@@ -59,21 +67,42 @@ void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numT
   {
     pthread_join(tid[i], NULL);
   }
+  if (rem != 0)
+  {
+    for (int i = chunk * numThreads; i < size; i++)
+    {
+      lambda(i);
+    }
+  }
+  struct timespec end_time;
+  if (clock_gettime(CLOCK_MONOTONIC, &end_time) == -1)
+  {
+    perror("shell.c: clock_gettime");
+    exit(EXIT_FAILURE);
+  }
+  double execution_time = ((end_time.tv_sec - start_time.tv_sec) * 1000) + (end_time.tv_nsec + start_time.tv_nsec) / 1e6;
+  std::cout << "Execution time: " << execution_time << std::endl;
 }
 
 void parallel_for(int low1, int high1, int low2, int high2, std::function<void(int, int)> &&lambda, int numThreads)
 {
-  std::cout << "Checking for matrix.cpp" << std::endl;
+  struct timespec start_time;
+  if (clock_gettime(CLOCK_MONOTONIC, &start_time) == -1)
+  {
+    perror("shell.c: clock_gettime");
+    exit(EXIT_FAILURE);
+  }
   pthread_t tid[numThreads];
   thread_args args[numThreads];
-  int chunk1 = (high1 - low1) / numThreads;
-  int chunk2 = (high2 - low2) / numThreads;
+  int size = high1 - low1;
+  int chunk = size / numThreads;
+  int rem = size % numThreads;
   for (int i = 0; i < numThreads; i++)
   {
-    args[i].start1 = i * chunk1;
-    args[i].end1 = (i + 1) * chunk1;
-    args[i].start2 = low2 + i * chunk2;
-    args[i].end2 = low2 + (i + 1) * chunk2;
+    args[i].start1 = low1 + i * chunk;
+    args[i].end1 = low1 + (i + 1) * chunk;
+    args[i].start2 = low2;
+    args[i].end2 = high2;
     args[i].lambda2 = lambda;
     pthread_create(&tid[i],
                    NULL,
@@ -84,6 +113,25 @@ void parallel_for(int low1, int high1, int low2, int high2, std::function<void(i
   {
     pthread_join(tid[i], NULL);
   }
+  if (rem != 0)
+  {
+    for (int i = chunk * numThreads; i < size; i++)
+    {
+      for (int j = low2; j < high2; j++)
+      {
+
+        lambda(i, j);
+      }
+    }
+  }
+  struct timespec end_time;
+  if (clock_gettime(CLOCK_MONOTONIC, &end_time) == -1)
+  {
+    perror("shell.c: clock_gettime");
+    exit(EXIT_FAILURE);
+  }
+  double execution_time = ((end_time.tv_sec - start_time.tv_sec) * 1000) + (end_time.tv_nsec + start_time.tv_nsec) / 1e6;
+  std::cout << "Execution time: " << execution_time << std::endl;
 }
 
 /* Demonstration on how to pass lambda as parameter.
