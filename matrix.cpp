@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
     for(int j=0; j<size; j++) {
       // initialize the matrices
       std::fill(A[i], A[i]+size, 1);
-      std::fill(B[i], B[i]+size, 1); 
+      std::fill(B[i], B[i]+size, 1);
       std::fill(C[i], C[i]+size, 0);
     }
   }, numThread);  
@@ -31,9 +31,9 @@ int main(int argc, char** argv) {
   printf("Test Success. \n");
   // cleanup memory
   parallel_for(0, size, [=](int i) {
-    delete A[i];
-    delete B[i];
-    delete C[i];
+    delete [] A[i];
+    delete [] B[i];
+    delete [] C[i];
   }, numThread);
   delete[] A;
   delete[] B;

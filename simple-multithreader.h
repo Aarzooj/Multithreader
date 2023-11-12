@@ -81,7 +81,7 @@ void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numT
     exit(EXIT_FAILURE);
   }
   double execution_time = ((end_time.tv_sec - start_time.tv_sec) * 1000) + (end_time.tv_nsec + start_time.tv_nsec) / 1e6;
-  std::cout << "Execution time: " << execution_time << " seconds" << std::endl;
+  std::cout << "Execution time: " << execution_time << " ms" << std::endl;
 }
 
 void parallel_for(int low1, int high1, int low2, int high2, std::function<void(int, int)> &&lambda, int numThreads)
@@ -131,7 +131,7 @@ void parallel_for(int low1, int high1, int low2, int high2, std::function<void(i
     exit(EXIT_FAILURE);
   }
   double execution_time = ((end_time.tv_sec - start_time.tv_sec) * 1000) + (end_time.tv_nsec + start_time.tv_nsec) / 1e6;
-  std::cout << "Execution time: " << execution_time << " seconds" << std::endl;
+  std::cout << "Execution time: " << execution_time << " ms" << std::endl;
 }
 
 /* Demonstration on how to pass lambda as parameter.
