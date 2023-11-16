@@ -58,14 +58,20 @@ void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numT
     args[i].start1 = low + i * chunk;
     args[i].lambda1 = lambda;
     args[i].end1 = low + (i + 1) * chunk;
-    pthread_create(&tid[i],
-                   NULL,
-                   thread_func_1,
-                   (void *)&args[i]);
+    if (pthread_create(&tid[i],
+                       NULL,
+                       thread_func_1,
+                       (void *)&args[i]) == -1)
+    {
+      std::cout << "pthread_create failed" << std::endl;
+    }
   }
   for (int i = 0; i < numThreads; i++)
   {
-    pthread_join(tid[i], NULL);
+    if (pthread_join(tid[i], NULL) != 0)
+    {
+      std::cout << "pthread_join failed" << std::endl;
+    }
   }
   if (rem != 0)
   {
@@ -104,14 +110,20 @@ void parallel_for(int low1, int high1, int low2, int high2, std::function<void(i
     args[i].start2 = low2;
     args[i].end2 = high2;
     args[i].lambda2 = lambda;
-    pthread_create(&tid[i],
-                   NULL,
-                   thread_func_2,
-                   (void *)&args[i]);
+    if (pthread_create(&tid[i],
+                       NULL,
+                       thread_func_2,
+                       (void *)&args[i]) == -1)
+    {
+      std::cout << "pthread_create failed" << std::endl;
+    }
   }
   for (int i = 0; i < numThreads; i++)
   {
-    pthread_join(tid[i], NULL);
+    if (pthread_join(tid[i], NULL) != 0)
+    {
+      std::cout << "pthread_join failed" << std::endl;
+    }
   }
   if (rem != 0)
   {
