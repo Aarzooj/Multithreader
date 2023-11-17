@@ -7,6 +7,7 @@
 
 int user_main(int argc, char **argv);
 
+// A struct to store all the arguments of the thread_func functions
 typedef struct
 {
   int start1;
@@ -17,8 +18,10 @@ typedef struct
   int end2;
 } thread_args;
 
+// thread_func to implement the vector addition in 1D
 void *thread_func_1(void *ptr)
 {
+  // typecasting
   thread_args *t = ((thread_args *)ptr);
   for (int i = t->start1; i < t->end1; i++)
   {
@@ -27,8 +30,10 @@ void *thread_func_1(void *ptr)
   return NULL;
 }
 
+// thread_func to implement matrix multiplication in 2D
 void *thread_func_2(void *ptr)
 {
+  // typecasting
   thread_args *t = ((thread_args *)ptr);
   for (int i = t->start1; i < t->end1; i++)
   {
@@ -40,6 +45,7 @@ void *thread_func_2(void *ptr)
   return NULL;
 }
 
+// Parallelising the lambda function in 1D
 void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numThreads)
 {
   struct timespec start_time;
@@ -48,6 +54,7 @@ void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numT
     perror("simple-multithreader.h: clock_gettime");
     exit(EXIT_FAILURE);
   }
+  // initialising
   pthread_t tid[numThreads];
   thread_args args[numThreads];
   int size = high - low;
@@ -73,6 +80,7 @@ void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numT
       std::cout << "pthread_join failed" << std::endl;
     }
   }
+  // calculating for remainder chunks who could not be implemented by threads in the for loop
   if (rem != 0)
   {
     for (int i = chunk * numThreads; i < size; i++)
@@ -98,6 +106,7 @@ void parallel_for(int low1, int high1, int low2, int high2, std::function<void(i
     perror("simple-multithreader.h: clock_gettime");
     exit(EXIT_FAILURE);
   }
+  // initialising 
   pthread_t tid[numThreads];
   thread_args args[numThreads];
   int size = high1 - low1;
@@ -105,8 +114,10 @@ void parallel_for(int low1, int high1, int low2, int high2, std::function<void(i
   int rem = size % numThreads;
   for (int i = 0; i < numThreads; i++)
   {
+    // Dividing the first matrix into sub matrix
     args[i].start1 = low1 + i * chunk;
     args[i].end1 = low1 + (i + 1) * chunk;
+    // Every element of matrix 1 is multiplied by all the columns of the second matrix
     args[i].start2 = low2;
     args[i].end2 = high2;
     args[i].lambda2 = lambda;
@@ -125,6 +136,7 @@ void parallel_for(int low1, int high1, int low2, int high2, std::function<void(i
       std::cout << "pthread_join failed" << std::endl;
     }
   }
+  // calculating for remainder chunks who could not be implemented by threads in the for loop
   if (rem != 0)
   {
     for (int i = chunk * numThreads; i < size; i++)
